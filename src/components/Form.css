@@ -1,0 +1,33 @@
+
+.form {
+    margin-bottom: 3rem;
+}
+form {
+    margin: 1rem 0;
+    text-align: center;
+}
+.form h2 {
+    text-align: center;
+    margin-top: 1rem;
+    font-weight: 600;
+}
+form label {
+    margin-right: 1rem;
+    font-size: 1.3rem;
+    font-weight: 600;
+}
+form input {
+    padding: .4rem .7rem;
+    font-size: 1.3rem;
+}
+form button {
+    background-color: #2f2f8a;
+    color: white;
+    border: 0;
+    padding: .5rem 1rem;
+    font-size: 1.3rem;
+    cursor: pointer;
+}
+.form button:hover{
+    opacity: .9;
+}
