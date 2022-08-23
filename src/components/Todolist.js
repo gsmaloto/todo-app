@@ -8,44 +8,73 @@ import {
   onSnapshot,
   orderBy,
   query,
+  updateDoc,
 } from "firebase/firestore";
+import TodoRow from "./TodoRow";
 
 const Todolist = () => {
   const [todos, setTodos] = useState([]);
+
   useEffect(() => {
-    const q = query(collection(db, "todos"), orderBy("timestamp", 'desc'))
+    //get realtime in firebase
+    const q = query(collection(db, "todos"), orderBy("timestamp", "desc"));
     onSnapshot(q, (snapshot) => {
       setTodos(snapshot.docs.map((doc) => ({ ...doc.data(), id: doc.id })));
     });
+    // todos.map((todo) => console.log(todo.isCompleted));
   }, []);
 
   // Delete todo
-  const deleteTask = async (id) => {
-    alert("task deleted");
-    await deleteDoc(doc(db, "todos", id));
+  const deleteTask = async (id, isCompleted) => {
+    try {
+      alert("task deleted");
+      await deleteDoc(doc(db, "todos", id));
+    } catch (e) {
+      alert(e.message);
+    }
   };
+
+  const handleCheck = async (todo) => {
+    try {
+      await updateDoc(doc(db, "todos", todo.id), {
+        isCompleted: !todo.isCompleted,
+      });
+    } catch (e) {
+      alert(e.meesge);
+    }
+  };
+  const openModal = () => {
+    alert("modal open");
+  };
+
   return (
     <div className="todoList">
       <div className="todoList__container">
-        {!todos.length ? (
-          <h3>---You dont have a task---</h3>
-        ) : (
-          todos.map((todo, index) => (
-            <div className="todoList__row" key={index}>
-              <p className="todoList__task">{todo.task}</p>
-              <div className="todoList__actions">
-                <button
-                  onClick={() => {
-                    deleteTask(todo.id);
-                  }}
-                >
-                  Delete
-                </button>
-                <button>Update</button>
-              </div>
-            </div>
-          ))
-        )}
+        <div className="todoList__notCompleted">
+          {todos.map(
+            (todo) =>
+              !todo.isCompleted && (
+                <TodoRow
+                  todo={todo}
+                  handleCheck={handleCheck}
+                  deleteTask={deleteTask}
+                />
+              )
+          )}
+        </div>
+
+        <div className="todoList__notCompleted">
+          {todos.map(
+            (todo) =>
+              todo.isCompleted && (
+                <TodoRow
+                  todo={todo}
+                  handleCheck={handleCheck}
+                  deleteTask={deleteTask}
+                />
+              )
+          )}
+        </div>
       </div>
     </div>
   );

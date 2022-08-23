@@ -1,44 +1,7 @@
 
 .todoList__container {
-    max-width: 500px;
+    max-width: 1200px;
     margin: 0 auto;
     padding: 0 1rem;
-}
-.todoList__container h3 {
-    text-align: center;
-    opacity: .6;
-}
-.todoList__row {
     display: flex;
-    align-items: center;
-    border-bottom: 2px solid #2f2f8a40;
-    margin-bottom: 1rem;
-    padding-bottom: .3rem;
-}
-.todoList__row:hover {
-    background-color: rgba(0, 0, 0, 0.158);
-}
-.todoList__row p {
-    flex: 1;
-}
-.todoList__actions {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 1rem;
-}
-.todoList__actions button {
-    padding: .3rem .6rem;
-    border: none;
-    color: white;
-}
-.todoList__actions button:hover {
-    opacity: .8;
-}
-.todoList__actions button:first-child {
-    background-color: red;
-    
-}
-.todoList__actions button:last-child {
-    background-color: green;
 }

@@ -11,10 +11,11 @@ import {
 import "./Form.css";
 
 const Form = () => {
+
   const [input, setInput] = useState("");
+
   const handleAddTask = (e) => {
     e.preventDefault();
-    
     addDoc(collection(db, "todos"), {
       task: input,
       isCompleted: false,
