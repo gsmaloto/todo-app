@@ -3,10 +3,11 @@ import "./TodoRow.css";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
 
-const TodoRow = ({ todo, handleCheck, deleteTask, openModal }) => {
+const TodoRow = ({ todo, handleCheck, deleteTask, openModal, deletedId }) => {
   return (
+    // ${!deleted ? "animDelete" : ""}
     <div
-      className="todoRow"
+      className={`todoRow ${deletedId == todo.id && "animDelete"}`}
       key={todo.id}
       style={{ opacity: todo.isCompleted && ".6" }}
     >

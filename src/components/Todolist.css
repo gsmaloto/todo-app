@@ -7,12 +7,17 @@
   justify-content: center;
   flex-wrap: wrap;
 }
+.alertDel {
+  width: 600px;
+  margin: 0 auto;
+}
 .todoList__notCompleted {
   max-width: 400px;
 }
-.todoList__notCompleted h3, .todoList__completed h3 {
-    text-align: center;
-    margin-bottom: 1rem;
+.todoList__notCompleted h3,
+.todoList__completed h3 {
+  text-align: center;
+  margin-bottom: 1rem;
 }
 .todoList__notCompleted h4 {
   opacity: 0.5;
@@ -22,3 +27,7 @@
 .todoList__completed {
   max-width: 400px;
 }
+
+
+
+

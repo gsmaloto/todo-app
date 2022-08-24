@@ -2,11 +2,26 @@
     display: flex;
     gap: 2rem;
 }
+.animDelete {
+    animation: animDelete 600ms ease-out 0s 1 normal forwards;
+}
 .todoRow__task {
     flex: 1;
-    min-width: 100px;
+    width: 100px;
+	overflow: hidden;
 }
 .todoRow__actions {
     display: flex;
     gap: .5rem;
+}
+@keyframes animDelete {
+	0% {
+		opacity: 1;
+		transform: translateX(0);
+	}
+
+	100% {
+		opacity: 0;
+		transform: translateX(-50px);
+	}
 }
