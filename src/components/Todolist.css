@@ -1,7 +1,24 @@
-
 .todoList__container {
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 0 1rem;
-    display: flex;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 1rem;
+  gap: 2rem;
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+.todoList__notCompleted {
+  max-width: 400px;
+}
+.todoList__notCompleted h3, .todoList__completed h3 {
+    text-align: center;
+    margin-bottom: 1rem;
+}
+.todoList__notCompleted h4 {
+  opacity: 0.5;
+  text-align: center;
+}
+
+.todoList__completed {
+  max-width: 400px;
 }

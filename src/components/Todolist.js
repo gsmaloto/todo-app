@@ -14,6 +14,8 @@ import TodoRow from "./TodoRow";
 
 const Todolist = () => {
   const [todos, setTodos] = useState([]);
+  const notCompletedTask = todos.filter((todo) => !todo.isCompleted);
+  const completedTask = todos.filter((todo) => todo.isCompleted);
 
   useEffect(() => {
     //get realtime in firebase
@@ -43,37 +45,50 @@ const Todolist = () => {
       alert(e.meesge);
     }
   };
-  const openModal = () => {
-    alert("modal open");
+  const openModal = async (todo) => {
+    const input = prompt("Edit task");
+    try {
+      input &&
+        (await updateDoc(doc(db, "todos", todo.id), {
+          task: input,
+        }));
+    } catch (e) {
+      alert(e.meesge);
+    }
   };
 
   return (
     <div className="todoList">
       <div className="todoList__container">
         <div className="todoList__notCompleted">
-          {todos.map(
-            (todo) =>
-              !todo.isCompleted && (
-                <TodoRow
-                  todo={todo}
-                  handleCheck={handleCheck}
-                  deleteTask={deleteTask}
-                />
-              )
+          <h3>Ongoing Todo</h3>
+          {!notCompletedTask.length ? (
+            <h4>-- Empty --</h4>
+          ) : (
+            notCompletedTask.map((todo) => (
+              <TodoRow
+                key={todo.id}
+                todo={todo}
+                handleCheck={handleCheck}
+                deleteTask={deleteTask}
+                openModal={openModal}
+              />
+            ))
           )}
         </div>
 
-        <div className="todoList__notCompleted">
-          {todos.map(
-            (todo) =>
-              todo.isCompleted && (
-                <TodoRow
-                  todo={todo}
-                  handleCheck={handleCheck}
-                  deleteTask={deleteTask}
-                />
-              )
-          )}
+        <div className="todoList__completed">
+          {completedTask.length !== 0 && <h3>Completed Todo</h3>}
+          {completedTask &&
+            completedTask.map((todo) => (
+              <TodoRow
+                key={todo.id}
+                todo={todo}
+                handleCheck={handleCheck}
+                deleteTask={deleteTask}
+                openModal={openModal}
+              />
+            ))}
         </div>
       </div>
     </div>
