@@ -11,40 +11,53 @@ import {
   updateDoc,
 } from "firebase/firestore";
 import TodoRow from "./TodoRow";
-
+import { animate, motion } from "framer-motion";
 
 const Todolist = () => {
   const [todos, setTodos] = useState([]);
-  const [deletedId, setDeletedId] = useState('');
+  const [deletedId, setDeletedId] = useState("");
   const notCompletedTask = todos.filter((todo) => !todo.isCompleted);
   const completedTask = todos.filter((todo) => todo.isCompleted);
+
+  const getTodos = () => {
+    const q = query(collection(db, "todos"), orderBy("timestamp", "desc"));
+    onSnapshot(q, (snapshot) => {
+      setTodos(snapshot.docs.map((doc) => ({ ...doc.data(), id: doc.id })));
+    });
+  };
   useEffect(() => {
     //get realtime in firebase
-
-      const q = query(collection(db, "todos"), orderBy("timestamp", "desc"));
-      onSnapshot(q, (snapshot) => {
-        setTodos(snapshot.docs.map((doc) => ({ ...doc.data(), id: doc.id })));
-      });
-      // console.log({...todos[0], del: 'sjdjasdjs'});
-
+    getTodos();
   }, []);
+
+  const rowVariants = {
+    initial: {
+      opacity: 0,
+    },
+    animate: {
+      opacity: 1,
+    },
+  };
 
   // Delete todo
   const deleteTask = async (id) => {
     try {
-      setDeletedId(id)
-      await setTimeout(() => { deleteDoc(doc(db, "todos", id));}, 600)
-      
+      setDeletedId(id);
+      await setTimeout(() => deleteDoc(doc(db, "todos", id)), 300);
     } catch (e) {
       alert(e.message);
     }
   };
 
   const handleCheck = async (todo) => {
-    try {setDeletedId(todo.id)
-      await setTimeout(() => { updateDoc(doc(db, "todos", todo.id), {
-        isCompleted: !todo.isCompleted,
-      })},600)
+    try {
+      await updateDoc(
+        doc(db, "todos", todo.id),
+        {
+          isCompleted: !todo.isCompleted,
+        },
+        600
+      );
     } catch (e) {
       alert(e.meesge);
     }
@@ -63,43 +76,44 @@ const Todolist = () => {
 
   return (
     <div className="todoList">
-      {/* <div className="alertDel">
-        <Alert variant="filled" severity="error">
-          This is an error alert — check it out!
-        </Alert>
-      </div> */}
-
       <div className="todoList__container">
         <div className="todoList__notCompleted">
           <h3>Ongoing Todo</h3>
-          {!notCompletedTask.length ? (
-            <h4>-- Empty --</h4>
-          ) : (
-            notCompletedTask.map((todo, key) => (
-              <TodoRow
-                key={todo.id}
-                todo={todo}
-                handleCheck={handleCheck}
-                deleteTask={deleteTask}
-                openModal={openModal}
-                deletedId={deletedId}
-              />
-            ))
+          {!notCompletedTask.length && <h3>--- No Task ---</h3>}
+          {todos.map(
+            (todo, key) =>
+              !todo.isCompleted && (
+                <div>
+                  <TodoRow
+                    key={todo.id}
+                    todo={todo}
+                    handleCheck={handleCheck}
+                    deleteTask={deleteTask}
+                    openModal={openModal}
+                    deletedId={deletedId}
+                  />
+                </div>
+              )
           )}
         </div>
 
         <div className="todoList__completed">
-          {completedTask.length !== 0 && <h3>Completed Todo</h3>}
-          {completedTask &&
-            completedTask.map((todo) => (
-              <TodoRow
-                key={todo.id}
-                todo={todo}
-                handleCheck={handleCheck}
-                deleteTask={deleteTask}
-                openModal={openModal}
-              />
-            ))}
+        {completedTask.length ? <h3>Completed Todo</h3> : ''}
+          {todos.map(
+            (todo, key) =>
+              todo.isCompleted && (
+                <div transition={{ duration: 0.3, delay: key * 0.2 }}>
+                  <TodoRow
+                    key={todo.id}
+                    todo={todo}
+                    handleCheck={handleCheck}
+                    deleteTask={deleteTask}
+                    openModal={openModal}
+                    deletedId={deletedId}
+                  />
+                </div>
+              )
+          )}
         </div>
       </div>
     </div>

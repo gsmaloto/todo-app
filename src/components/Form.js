@@ -22,7 +22,6 @@ const Form = () => {
       timestamp: serverTimestamp(),
     });
     setInput("");
-    alert("task added succesfully");
     
   };
 
