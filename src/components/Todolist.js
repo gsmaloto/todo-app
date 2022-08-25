@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from "react";
-import "./Todolist.css";
 import { db } from "../firebase";
 import {
   collection,
@@ -11,14 +10,19 @@ import {
   updateDoc,
 } from "firebase/firestore";
 import TodoRow from "./TodoRow";
-import { animate, motion } from "framer-motion";
+import { Container } from "./styles/GlobalStyles";
+import styled from "styled-components";
 
 const Todolist = () => {
   const [todos, setTodos] = useState([]);
+  const [rowCount, setRowCount] = useState(5);
   const [deletedId, setDeletedId] = useState("");
+  const [rowNotComTask, setRowNotComTask] = useState(rowCount);
+  const [rowComTask, setRowComTask] = useState(5);
   const notCompletedTask = todos.filter((todo) => !todo.isCompleted);
   const completedTask = todos.filter((todo) => todo.isCompleted);
 
+  //get realtime in firebase
   const getTodos = () => {
     const q = query(collection(db, "todos"), orderBy("timestamp", "desc"));
     onSnapshot(q, (snapshot) => {
@@ -26,18 +30,8 @@ const Todolist = () => {
     });
   };
   useEffect(() => {
-    //get realtime in firebase
     getTodos();
   }, []);
-
-  const rowVariants = {
-    initial: {
-      opacity: 0,
-    },
-    animate: {
-      opacity: 1,
-    },
-  };
 
   // Delete todo
   const deleteTask = async (id) => {
@@ -48,7 +42,6 @@ const Todolist = () => {
       alert(e.message);
     }
   };
-
   const handleCheck = async (todo) => {
     try {
       await updateDoc(
@@ -75,15 +68,17 @@ const Todolist = () => {
   };
 
   return (
-    <div className="todoList">
-      <div className="todoList__container">
-        <div className="todoList__notCompleted">
+    <Container>
+      <TodoContainer>
+        <Column>
           <h3>Ongoing Todo</h3>
-          {!notCompletedTask.length && <h3>--- No Task ---</h3>}
-          {todos.map(
+          {!notCompletedTask.length && <h4>--- No Todo ---</h4>}
+          {notCompletedTask.map(
             (todo, key) =>
-              !todo.isCompleted && (
-                <div>
+            !todo.isCompleted &&
+            key <= rowNotComTask && (
+              <Row colored={key % 2 && true}>
+                {key != rowNotComTask ? (
                   <TodoRow
                     key={todo.id}
                     todo={todo}
@@ -92,32 +87,71 @@ const Todolist = () => {
                     openModal={openModal}
                     deletedId={deletedId}
                   />
-                </div>
+                ) : (
+                  <button onClick={() => {setRowNotComTask(rowNotComTask + rowCount)}}>see more</button>
+                )}
+              </Row>
               )
           )}
-        </div>
-
-        <div className="todoList__completed">
-        {completedTask.length ? <h3>Completed Todo</h3> : ''}
-          {todos.map(
+        </Column>
+        <Column hide={!completedTask.length ? true : false}>
+          {completedTask.length ? <h3>Completed Todo</h3> : ""}
+          {completedTask.map(
             (todo, key) =>
-              todo.isCompleted && (
-                <div transition={{ duration: 0.3, delay: key * 0.2 }}>
-                  <TodoRow
-                    key={todo.id}
-                    todo={todo}
-                    handleCheck={handleCheck}
-                    deleteTask={deleteTask}
-                    openModal={openModal}
-                    deletedId={deletedId}
-                  />
-                </div>
+              todo.isCompleted &&
+              key <= rowComTask && (
+                <Row colored={key % 2 && true}>
+                  {key != rowComTask ? (
+                    <TodoRow
+                      key={todo.id}
+                      todo={todo}
+                      handleCheck={handleCheck}
+                      deleteTask={deleteTask}
+                      openModal={openModal}
+                      deletedId={deletedId}
+                    />
+                  ) : (
+                    <button onClick={() => {setRowComTask(rowComTask + rowCount)}}>see more</button>
+                  )}
+                </Row>
               )
           )}
-        </div>
-      </div>
-    </div>
+        </Column>
+      </TodoContainer>
+    </Container>
   );
 };
 
 export default Todolist;
+
+const TodoContainer = styled.div`
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  gap: 2rem;
+  flex-wrap: wrap;
+  margin-top: 2rem;
+`;
+const Column = styled.div`
+  display: ${(props) => (props.hide ? "none" : "block")};
+  border: 3px solid #c21010;
+  position: relative;
+  padding: 1rem 0;
+  width: 300px;
+  height: auto;
+  h3 {
+    position: absolute;
+    top: -15px;
+    left: 10px;
+    padding: 0 1rem;
+    background-color: white;
+  }
+  h4 {
+    opacity: 0.5;
+    text-align: center;
+  }
+`;
+
+const Row = styled.div`
+  background-color: ${(props) => (props.colored ? "#00000020" : "white")};
+`;
