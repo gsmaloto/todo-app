@@ -17,8 +17,6 @@ const Todolist = () => {
   const [todos, setTodos] = useState([]);
   const [rowCount, setRowCount] = useState(5);
   const [deletedId, setDeletedId] = useState("");
-  const [rowNotComTask, setRowNotComTask] = useState(rowCount);
-  const [rowComTask, setRowComTask] = useState(5);
   const notCompletedTask = todos.filter((todo) => !todo.isCompleted);
   const completedTask = todos.filter((todo) => todo.isCompleted);
 
@@ -73,48 +71,45 @@ const Todolist = () => {
         <Column>
           <h3>Ongoing Todo</h3>
           {!notCompletedTask.length && <h4>--- No Todo ---</h4>}
-          {notCompletedTask.map(
-            (todo, key) =>
-            !todo.isCompleted &&
-            key <= rowNotComTask && (
-              <Row colored={key % 2 && true}>
-                {key != rowNotComTask ? (
-                  <TodoRow
-                    key={todo.id}
-                    todo={todo}
-                    handleCheck={handleCheck}
-                    deleteTask={deleteTask}
-                    openModal={openModal}
-                    deletedId={deletedId}
-                  />
-                ) : (
-                  <button onClick={() => {setRowNotComTask(rowNotComTask + rowCount)}}>see more</button>
-                )}
-              </Row>
-              )
+
+          {notCompletedTask.map((todo, key) => (
+            <Row colored={key % 2 && true}>
+              <TodoRow
+                key={todo.id}
+                todo={todo}
+                handleCheck={handleCheck}
+                deleteTask={deleteTask}
+                openModal={openModal}
+                deletedId={deletedId}
+              />
+            </Row>
+          ))}
+          {notCompletedTask.length > 0 && (
+            <p className="rowTotal">
+              ----- {notCompletedTask.length}
+              {notCompletedTask.length == 1 ? " item" : " items"} -----
+            </p>
           )}
         </Column>
         <Column hide={!completedTask.length ? true : false}>
           {completedTask.length ? <h3>Completed Todo</h3> : ""}
-          {completedTask.map(
-            (todo, key) =>
-              todo.isCompleted &&
-              key <= rowComTask && (
-                <Row colored={key % 2 && true}>
-                  {key != rowComTask ? (
-                    <TodoRow
-                      key={todo.id}
-                      todo={todo}
-                      handleCheck={handleCheck}
-                      deleteTask={deleteTask}
-                      openModal={openModal}
-                      deletedId={deletedId}
-                    />
-                  ) : (
-                    <button onClick={() => {setRowComTask(rowComTask + rowCount)}}>see more</button>
-                  )}
-                </Row>
-              )
+          {completedTask.map((todo, key) => (
+            <Row colored={key % 2 && true}>
+              <TodoRow
+                key={todo.id}
+                todo={todo}
+                handleCheck={handleCheck}
+                deleteTask={deleteTask}
+                openModal={openModal}
+                deletedId={deletedId}
+              />
+            </Row>
+          ))}
+          {completedTask.length != 0 && (
+            <p className="rowTotal">
+              ------ {completedTask.length}
+              {completedTask.length == 1 ? " item" : " items"} -----
+            </p>
           )}
         </Column>
       </TodoContainer>
@@ -150,8 +145,18 @@ const Column = styled.div`
     opacity: 0.5;
     text-align: center;
   }
+  .rowTotal {
+    text-align: center;
+    opacity: 0.7;
+  }
 `;
-
 const Row = styled.div`
   background-color: ${(props) => (props.colored ? "#00000020" : "white")};
+`;
+const ColumnFooter = styled.div`
+  display: ${(props) => (props.hide ? "none" : "block")};
+`;
+
+const FooterButton = styled.button`
+  transform: ${(props) => (props.hide ? "scale(0)" : "scale(1)")};
 `;
