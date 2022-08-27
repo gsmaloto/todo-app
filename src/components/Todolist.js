@@ -6,6 +6,7 @@ import {
   doc,
   onSnapshot,
   orderBy,
+  where,
   query,
   updateDoc,
 } from "firebase/firestore";
@@ -13,19 +14,29 @@ import TodoRow from "./TodoRow";
 import { Container } from "./styles/GlobalStyles";
 import styled from "styled-components";
 
-const Todolist = () => {
+const Todolist = ({ user }) => {
   const [todos, setTodos] = useState([]);
+  const [loading, setLoading] = useState(true);
   const [rowCount, setRowCount] = useState(5);
   const [deletedId, setDeletedId] = useState("");
-  const notCompletedTask = todos.filter((todo) => !todo.isCompleted);
-  const completedTask = todos.filter((todo) => todo.isCompleted);
+  const notCompletedTask = todos.filter(
+    (todo) => !todo.isCompleted && todo.uid == user.uid
+  );
+  const completedTask = todos.filter(
+    (todo) => todo.isCompleted && todo.uid == user.uid
+  );
 
   //get realtime in firebase
   const getTodos = () => {
-    const q = query(collection(db, "todos"), orderBy("timestamp", "desc"));
+    const q = query(
+      collection(db, "todos"),
+      orderBy("timestamp", "desc")
+      // where("uid", "==", user.uid)
+    );
     onSnapshot(q, (snapshot) => {
       setTodos(snapshot.docs.map((doc) => ({ ...doc.data(), id: doc.id })));
     });
+    setLoading(false);
   };
   useEffect(() => {
     getTodos();
@@ -68,50 +79,56 @@ const Todolist = () => {
   return (
     <Container>
       <TodoContainer>
-        <Column>
-          <h3>Ongoing Todo</h3>
-          {!notCompletedTask.length && <h4>--- No Todo ---</h4>}
+        {loading ? (
+          <h1>Loading...</h1>
+        ) : (
+          <>
+            <Column>
+              <h3>Ongoing Todo</h3>
+              {!notCompletedTask.length && <h4>--- No Todo ---</h4>}
 
-          {notCompletedTask.map((todo, key) => (
-            <Row colored={key % 2 && true}>
-              <TodoRow
-                key={todo.id}
-                todo={todo}
-                handleCheck={handleCheck}
-                deleteTask={deleteTask}
-                openModal={openModal}
-                deletedId={deletedId}
-              />
-            </Row>
-          ))}
-          {notCompletedTask.length > 0 && (
-            <p className="rowTotal">
-              ----- {notCompletedTask.length}
-              {notCompletedTask.length == 1 ? " item" : " items"} -----
-            </p>
-          )}
-        </Column>
-        <Column hide={!completedTask.length ? true : false}>
-          {completedTask.length ? <h3>Completed Todo</h3> : ""}
-          {completedTask.map((todo, key) => (
-            <Row colored={key % 2 && true}>
-              <TodoRow
-                key={todo.id}
-                todo={todo}
-                handleCheck={handleCheck}
-                deleteTask={deleteTask}
-                openModal={openModal}
-                deletedId={deletedId}
-              />
-            </Row>
-          ))}
-          {completedTask.length != 0 && (
-            <p className="rowTotal">
-              ------ {completedTask.length}
-              {completedTask.length == 1 ? " item" : " items"} -----
-            </p>
-          )}
-        </Column>
+              {notCompletedTask.map((todo, key) => (
+                <Row colored={key % 2 && true} key={key}>
+                  <TodoRow
+                    key={todo.id}
+                    todo={todo}
+                    handleCheck={handleCheck}
+                    deleteTask={deleteTask}
+                    openModal={openModal}
+                    deletedId={deletedId}
+                  />
+                </Row>
+              ))}
+              {notCompletedTask.length > 0 && (
+                <p className="rowTotal">
+                  ----- {notCompletedTask.length}
+                  {notCompletedTask.length == 1 ? " item" : " items"} -----
+                </p>
+              )}
+            </Column>
+            <Column hide={!completedTask.length ? true : false}>
+              {completedTask.length ? <h3>Completed Todo</h3> : ""}
+              {completedTask.map((todo, key) => (
+                <Row colored={key % 2 && true} key={key}>
+                  <TodoRow
+                    key={todo.id}
+                    todo={todo}
+                    handleCheck={handleCheck}
+                    deleteTask={deleteTask}
+                    openModal={openModal}
+                    deletedId={deletedId}
+                  />
+                </Row>
+              ))}
+              {completedTask.length != 0 && (
+                <p className="rowTotal">
+                  ------ {completedTask.length}
+                  {completedTask.length == 1 ? " item" : " items"} -----
+                </p>
+              )}
+            </Column>
+          </>
+        )}
       </TodoContainer>
     </Container>
   );

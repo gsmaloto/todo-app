@@ -22,27 +22,27 @@ const TodoRow = ({
           key={todo.id}
         >
           <Container>
-          <Row>
-          <input
-            type="checkbox"
-            onChange={() => handleCheck(todo)}
-            checked={todo.isCompleted && "checked"}
-          />
-          <p className="todoRow__task">{todo.task}</p>
-          <div className="actions">
-            <div className="action">
-              <DeleteIcon
-                color="error"
-                onClick={() => {
-                  deleteTask(todo.id);
-                }}
+            <Row>
+              <input
+                type="checkbox"
+                onChange={() => handleCheck(todo)}
+                checked={todo.isCompleted && "checked"}
               />
-            </div>
-            <div className="action">
-              <EditIcon color="info" onClick={() => openModal(todo)} />
-            </div>
-          </div>
-          </Row>
+              <p className="todoRow__task">{todo.task}</p>
+              <div className="actions">
+                <div className="action">
+                  <DeleteIcon
+                    color="error"
+                    onClick={() => {
+                      deleteTask(todo.id);
+                    }}
+                  />
+                </div>
+                <div className="action">
+                  <EditIcon color="info" onClick={() => openModal(todo)} />
+                </div>
+              </div>
+            </Row>
           </Container>
         </motion.div>
       )}
@@ -53,37 +53,35 @@ const TodoRow = ({
 export default TodoRow;
 
 const Row = styled.div`
-display: flex;
-align-items: center;
-&:hover {
-  background-color: #C2101030;
-}
-input {
-  margin: 0 1rem;
-  cursor: pointer;
-
-  &:hover {
-      transform: scale(1.2);
-    }
-}
-
-p {
-  flex: 1;
-}
-
-.actions {
-  margin: 0 1rem;
   display: flex;
-  gap: .5rem;
- 
-
-  &>*{
+  align-items: center;
+  &:hover {
+    background-color: #c2101030;
+  }
+  input {
+    margin: 0 1rem;
     cursor: pointer;
 
     &:hover {
       transform: scale(1.2);
     }
   }
-}
 
-`
+  p {
+    flex: 1;
+  }
+
+  .actions {
+    margin: 0 1rem;
+    display: flex;
+    gap: 0.5rem;
+
+    & > * {
+      cursor: pointer;
+
+      &:hover {
+        transform: scale(1.2);
+      }
+    }
+  }
+`;
